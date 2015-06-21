@@ -26,10 +26,17 @@
 			<artifactId>hadoop-client</artifactId>
 			<version>${hadoop.version}</version>
 		</dependency>
+		<!-- Indico.io Dependencies -->
 		<dependency>
     			<groupId>io.indico</groupId>
     			<artifactId>indico</artifactId>
     			<version>${indico.version}</version>
+		</dependency>
+		<!-- Google json-simple Dependencies -->
+		<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>1.1</version>
 		</dependency>
 	</dependencies>
 	<build>
