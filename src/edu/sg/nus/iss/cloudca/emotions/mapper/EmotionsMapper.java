@@ -1,10 +1,18 @@
 package edu.sg.nus.iss.cloudca.emotions.mapper;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
+import org.apache.commons.lang3.Range;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -27,21 +35,27 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
  *
  */
 public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, EmotionsDataValue>{
-	public static final io.indico.indico indico;
+	private static final io.indico.indico indico;
+	private static final File indicoRangeFile;
+	private static Map<Range, String> indicoRangeText = new HashMap<Range, String>();
 	//TODO: To move indico api key to a config file or home as mentioned in indico site.
 	static {
 		indico = new io.indico.indico("99446043545d74177fdd9bc90dfdd27d");
+		indicoRangeFile = new File("/data/input/indico_range_happiness_index.dat");
+		readRange();
     }
 	
-	private EmotionsDataKey key = new EmotionsDataKey();
-	private EmotionsDataValue value = new EmotionsDataValue();
+	private EmotionsDataKey dataKey = new EmotionsDataKey();
+	private EmotionsDataValue dataValue = new EmotionsDataValue();
 	
 	@Override
 	protected void map(LongWritable key, Text value, Context context)
 			throws IOException, InterruptedException {
 		getDataFromJson(value.toString());
-		Double sentimentVal = getIndicoValue(this.value.getFeedData().toString());
-		this.value.setIndicoValue(new DoubleWritable(sentimentVal));
+		Double sentimentVal = getIndicoValue(this.dataValue.getFeedData().toString());
+		this.dataValue.setIndicoValue(new DoubleWritable(sentimentVal));
+		this.dataValue.setHappinessIndexText(new Text(getRangeText(sentimentVal)));
+		context.write(dataKey, dataValue);
 	}
 	
 	private void getDataFromJson(String str){
@@ -59,7 +73,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 				hashTagList.add((String)itr.next());
 			}
 			String[] arr = new String[hashTagList.size()];
-			this.value = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
+			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
 		}catch(Exception e){
 			System.out.println("Exception : " + e.getLocalizedMessage());
 		}
@@ -76,5 +90,43 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		} 
         return val;
     }
-
+	
+	static void readRange(){
+		FileReader reader= null;
+		try{
+			reader = new FileReader(indicoRangeFile);
+		}catch(FileNotFoundException fnfe){
+			System.out.println("File Not found: " + fnfe.getMessage());
+		}
+		BufferedReader buff = new BufferedReader(reader);
+		while(true){
+			String line = "";
+			try{
+				line = buff.readLine();
+			}catch(IOException ioe){
+				System.out.println("IO Exception: "+ ioe.getMessage());
+			}
+			if(line == null ){
+				break;
+			}
+			StringTokenizer token = new StringTokenizer(line,",");
+			Double startRange, endRange;
+			String text;
+			while(token.hasMoreTokens()){
+				startRange = new Double(token.nextToken());
+				endRange = new Double(token.nextToken());
+				text = token.nextToken();
+				indicoRangeText.put(Range.between(startRange, endRange), text);
+			}
+		}
+	}
+	
+	private String getRangeText(Double sentimentVal){
+		for(Map.Entry<Range, String> entry : indicoRangeText.entrySet() ){
+			if(entry.getKey().contains(sentimentVal)){
+				return entry.getValue();
+			}
+		}
+		return "";
+	}
 }
