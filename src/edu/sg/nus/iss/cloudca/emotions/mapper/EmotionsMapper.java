@@ -81,6 +81,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			Integer likecount=Integer.parseInt((String)json.get("likesCount"));
 			String geolocation=(String)json.get("geolocation");
 			String celebrity=(String)json.get("celebrity");
+			String date=(String)json.get("date");
 			JSONArray jsonArr=(JSONArray)json.get("hashtags");
 			Iterator<String> itr = jsonArr.iterator();
 			List<String> hashTagList = new ArrayList<String>();
@@ -88,7 +89,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 				hashTagList.add((String)itr.next());
 			}
 			String[] arr = new String[hashTagList.size()];
-			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
+			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr), date);
 			log.info("getDataFromJson :: EmotionsDataKey :" + this.dataKey);
 			log.info("getDataFromJson :: EmotionsDataValue :" + this.dataValue);
 		}catch(Exception e){
@@ -96,7 +97,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		}
 	}
 	
-	static double getIndicoValue(String statement)  {  
+	static double getIndicoValue(String statement)  { 
 		Double val = new Double(0d);
         try {
         	val =  indico.sentiment(statement);
@@ -106,6 +107,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		} catch (IOException e) {
 			log.error("IOException: " + e.getLocalizedMessage());
 		} 
+        log.info("getIndicoValue - Statement :" + statement +" -------------------  Value: "+ val);
         return val;
     }
 	
