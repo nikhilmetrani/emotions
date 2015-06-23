@@ -9,6 +9,9 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
+import org.apache.log4j.Logger;
+
+import edu.sg.nus.iss.cloudca.emotions.main.EmotionsAggregatorMain;
 
 /**
  * Responsible to hold the data necessary for Map reduce Value
@@ -17,15 +20,16 @@ import org.apache.hadoop.io.WritableComparable;
  * 
  */
 public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> {
-	private Text feedData;
-	private Text userName;
-	private IntWritable likeCount;
-	private Text geoLocation;
-	private Text celebrity;
+	private static final Logger log = Logger.getLogger(EmotionsDataValue.class);
+	private Text feedData = new Text();
+	private Text userName = new Text();
+	private IntWritable likeCount = new IntWritable();
+	private Text geoLocation = new Text();
+	private Text celebrity = new Text();
 	private ArrayWritable hashTag = new ArrayWritable(Text.class);
 
-	private DoubleWritable indicoValue;
-	private Text happinessIndexText;
+	private DoubleWritable indicoValue = new DoubleWritable(0d);
+	private Text happinessIndexText = new Text();
 
 	public EmotionsDataValue() {
 		this("","",0,"","",new String[]{});
@@ -41,7 +45,6 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 			Text[] arr = new Text[hashTag.length];
 			for(int i = 0; i < hashTag.length; i++){
 				arr[i] = new Text(hashTag[i]);
-//				arr[i].set();
 			}
 			this.hashTag.set(arr);
 		}
@@ -49,12 +52,20 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 
 	public void write(DataOutput out) throws IOException {
 		feedData.write(out);
+		userName.write(out);
+		likeCount.write(out);
+		geoLocation.write(out);
+		celebrity.write(out);
 		indicoValue.write(out);
 		happinessIndexText.write(out);
 	}
 
 	public void readFields(DataInput in) throws IOException {
 		feedData.readFields(in);
+		userName.readFields(in);
+		likeCount.readFields(in);
+		geoLocation.readFields(in);
+		celebrity.readFields(in);
 		indicoValue.readFields(in);
 		happinessIndexText.readFields(in);
 	}
@@ -151,6 +162,15 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 		} else if (!indicoValue.equals(other.indicoValue))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EmotionsDataValue [feedData=" + feedData + ", userName="
+				+ userName + ", likeCount=" + likeCount + ", geoLocation="
+				+ geoLocation + ", celebrity=" + celebrity + ", hashTag="
+				+ hashTag + ", indicoValue=" + indicoValue
+				+ ", happinessIndexText=" + happinessIndexText + "]";
 	}
 
 	

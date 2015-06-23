@@ -17,6 +17,7 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,9 +36,11 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
  *
  */
 public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, EmotionsDataValue>{
+	private static final Logger log = Logger.getLogger(EmotionsMapper.class);
 	private static final io.indico.indico indico;
 	private static final File indicoRangeFile;
 	private static Map<Range, String> indicoRangeText = new HashMap<Range, String>();
+	
 	//TODO: To move indico api key to a config file or home as mentioned in indico site.
 	static {
 		indico = new io.indico.indico("99446043545d74177fdd9bc90dfdd27d");		
@@ -51,6 +54,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	@Override
 	protected void map(LongWritable key, Text value, Context context)
 			throws IOException, InterruptedException {
+		log.info("In Map :: Line String :" + value.toString());
 		getDataFromJson(value.toString());
 		Double sentimentVal = getIndicoValue(this.dataValue.getFeedData().toString());
 		this.dataValue.setIndicoValue(new DoubleWritable(sentimentVal));
@@ -74,8 +78,9 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			}
 			String[] arr = new String[hashTagList.size()];
 			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
+			log.info("getDataFromJson :: EmotionsDataValue :" + this.dataValue);
 		}catch(Exception e){
-			System.out.println("Exception : " + e.getMessage());
+			System.out.println("Exception : " + e.getLocalizedMessage());
 		}
 	}
 	
@@ -83,10 +88,11 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		Double val = new Double(0d);
         try {
         	val =  indico.sentiment(statement);
+        	log.info("Indico value: " + val);
 		} catch (UnsupportedOperationException e) {
-			System.out.println("UnsupportedOperationException: " + e.getMessage());
+			log.error("UnsupportedOperationException: " + e.getLocalizedMessage());
 		} catch (IOException e) {
-			System.out.println("IOException: " + e.getMessage());
+			log.error("IOException: " + e.getLocalizedMessage());
 		} 
         return val;
     }
@@ -96,7 +102,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		try{
 			reader = new FileReader(indicoRangeFile);
 		}catch(FileNotFoundException fnfe){
-			System.out.println("File Not found: " + fnfe.getMessage());
+			log.error("File Not found: " + fnfe.getLocalizedMessage());
 		}
 		BufferedReader buff = new BufferedReader(reader);
 		while(true){
@@ -104,7 +110,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			try{
 				line = buff.readLine();
 			}catch(IOException ioe){
-				System.out.println("IO Exception: "+ ioe.getMessage());
+				log.error("IO Exception: "+ ioe.getMessage());
 			}
 			if(line == null ){
 				break;
