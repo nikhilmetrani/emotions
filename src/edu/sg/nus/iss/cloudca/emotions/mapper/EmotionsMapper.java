@@ -40,8 +40,8 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	private static Map<Range, String> indicoRangeText = new HashMap<Range, String>();
 	//TODO: To move indico api key to a config file or home as mentioned in indico site.
 	static {
-		indico = new io.indico.indico("99446043545d74177fdd9bc90dfdd27d");
-		indicoRangeFile = new File("/data/input/indico_range_happiness_index.dat");
+		indico = new io.indico.indico("99446043545d74177fdd9bc90dfdd27d");		
+		indicoRangeFile = new File("data/input/indico_range_happiness_index.dat");
 		readRange();
     }
 	
@@ -63,7 +63,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			JSONObject json = (JSONObject)new JSONParser().parse(str);
 			String tweet = (String)json.get("tweet");
 			String user= (String) json.get("user");
-			Integer likecount=(Integer)json.get("likesCount");
+			Integer likecount=Integer.parseInt((String)json.get("likesCount"));
 			String geolocation=(String)json.get("geolocation");
 			String celebrity=(String)json.get("celebrity");
 			JSONArray jsonArr=(JSONArray)json.get("hashtags");
@@ -75,7 +75,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			String[] arr = new String[hashTagList.size()];
 			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
 		}catch(Exception e){
-			System.out.println("Exception : " + e.getLocalizedMessage());
+			System.out.println("Exception : " + e.getMessage());
 		}
 	}
 	
@@ -84,9 +84,9 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
         try {
         	val =  indico.sentiment(statement);
 		} catch (UnsupportedOperationException e) {
-			System.out.println("Exception: " + e.getMessage());
+			System.out.println("UnsupportedOperationException: " + e.getMessage());
 		} catch (IOException e) {
-			System.out.println("Exception: " + e.getMessage());
+			System.out.println("IOException: " + e.getMessage());
 		} 
         return val;
     }
