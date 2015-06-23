@@ -40,7 +40,8 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 		if(hashTag != null){
 			Text[] arr = new Text[hashTag.length];
 			for(int i = 0; i < hashTag.length; i++){
-				arr[i].set(hashTag[i]);
+				arr[i] = new Text(hashTag[i]);
+//				arr[i].set();
 			}
 			this.hashTag.set(arr);
 		}
