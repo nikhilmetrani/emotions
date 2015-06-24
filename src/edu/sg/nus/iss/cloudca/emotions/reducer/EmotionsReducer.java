@@ -2,10 +2,20 @@ package edu.sg.nus.iss.cloudca.emotions.reducer;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.json.simple.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
 import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataKey;
 import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
 
@@ -15,33 +25,78 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
  * @author Sugesh
  *
  */
-public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue, EmotionsDataKey, EmotionsDataValue> {
+public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue, EmotionsDataKey, Text> {
 
 	@Override
 	protected void reduce(EmotionsDataKey key, Iterable<EmotionsDataValue> values, Context context)
 					throws IOException, InterruptedException {
-		Map<String,CircularFifoQueue<EmotionsDataValue>> map = new HashMap<String,CircularFifoQueue<EmotionsDataValue>> ();
+		System.out.println("Reducer operation started");
+
+		Map<String,TweetContent> map = new HashMap<String,TweetContent> ();
 		for(EmotionsDataValue value : values) {
 			String keyString = value.getHappinessIndexText().toString();
-			CircularFifoQueue<EmotionsDataValue> topTweetsForCategory = map.get(keyString);
-			if(topTweetsForCategory == null) {
-				topTweetsForCategory = new CircularFifoQueue<EmotionsDataValue>(10);
-				map.put(keyString, topTweetsForCategory);
+			TweetContent content = map.get(keyString);
+			if(content == null) {
+				content = new TweetContent(keyString);
+				map.put(keyString, content);
 			}
-			if(topTweetsForCategory.isEmpty() || topTweetsForCategory.peek().getIndicoValue().get()<value.getIndicoValue().get()) {
-				topTweetsForCategory.add(value);
+			if(content.tweets.isEmpty() || content.tweets.peek().getIndicoValue().get()<value.getIndicoValue().get()) {
+				content.tweets.add(value);
 			}
+			content.indexvalue++;
 		}
-		System.out.println("Reduced");
+		String json = null;
+		try {
+			Map<String,Object> outputMap = new HashMap<String,Object>();
+			outputMap.put("product", key.getName().toString());
+			outputMap.put("happyindex", map.values());
+			Gson gson = new GsonBuilder().registerTypeAdapter(TweetContent.class, new OutputTypeAdapter()).create();
+			json = gson.toJson(outputMap);
+			context.write(key, new Text(json));
+		}
+		catch(Exception ex) {
+			System.err.println(ex.getMessage());
+		}
+		
+		System.out.println("Reducer operation completed. Output: " + json);
 	}
 	
-	/**
-	 * Output JSON class 
-	 * @author Sugesh
-	 *
-	 */
-	public static class Output {
-		public String product;
+	public static class TweetContent  {
+		
+		public final String indextype;
+		public final CircularFifoQueue<EmotionsDataValue> tweets;
+		public long indexvalue = 0;
+		
+		TweetContent(String happinessIndexString) {
+			this.indextype = happinessIndexString;
+			this.tweets = new CircularFifoQueue<EmotionsDataValue>(10);
+		}
+	}
+	
+	static class OutputTypeAdapter extends TypeAdapter<TweetContent> {
+
+		@Override
+		public void write(JsonWriter out, TweetContent value) throws IOException {
+			out.beginObject();
+			out.name("indextype").value(value.indextype);
+			out.name("indexvalue").value(value.indexvalue);
+			out.name("happyindex");
+			out.beginArray();
+			java.util.Iterator<EmotionsDataValue> iterator = value.tweets.iterator();
+			while(iterator.hasNext()) {
+				out.value(iterator.next().getFeedData().toString());
+			}
+			out.endArray();
+			out.endObject();
+		}
+
+		@Override
+		public TweetContent read(JsonReader in) throws IOException {
+			return null;
+		}
+
+		
+		
 	}
 
 }
