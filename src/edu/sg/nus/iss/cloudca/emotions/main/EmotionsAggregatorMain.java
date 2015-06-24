@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataKey;
 import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
 import edu.sg.nus.iss.cloudca.emotions.mapper.EmotionsMapper;
+import edu.sg.nus.iss.cloudca.emotions.reducer.EmotionsReducer;
 
 
 public class EmotionsAggregatorMain extends Configured implements Tool{
@@ -41,7 +42,7 @@ public class EmotionsAggregatorMain extends Configured implements Tool{
 		//job.setJarByClass(EmotionsAggregatorMain.class);
 		//job.setCombinerClass(EmotionsReducer.class);
 		job.setMapperClass(EmotionsMapper.class);
-//		job.setReducerClass(EmotionsReducer.class);
+		job.setReducerClass(EmotionsReducer.class);
 		
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
