@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -24,8 +25,10 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
  * @author Sugesh
  *
  */
-public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue, EmotionsDataKey, Text> {
+public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue, NullWritable, Text> {
 
+	NullWritable nullWritable = NullWritable.get();
+	
 	@Override
 	protected void reduce(EmotionsDataKey key, Iterable<EmotionsDataValue> values, Context context) throws IOException, InterruptedException {
 
@@ -50,7 +53,7 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 			outputMap.put("happyindex", map.values());
 			Gson gson = new GsonBuilder().registerTypeAdapter(TweetContent.class, new OutputTypeAdapter()).create();
 			String json = gson.toJson(outputMap);
-			context.write(key, new Text(json));
+			context.write(nullWritable, new Text(json));
 			System.out.println("Reducer operation completed. Output: " + json);
 		}
 		catch(Exception ex) {
@@ -98,7 +101,7 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 			out.beginObject();
 			out.name("indextype").value(value.indextype);
 			out.name("indexvalue").value(value.indexvalue);
-			out.name("happyindex");
+			out.name("tweets");
 			out.beginArray();
 			java.util.Iterator<EmotionsDataValue> iterator = value.tweets.iterator();
 			while(iterator.hasNext()) {
