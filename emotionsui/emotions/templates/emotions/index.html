@@ -1,0 +1,361 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../../favicon.ico">
+
+<title>Emotions :: Happy Index Finder</title>
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">	
+
+<!-- Custom styles for this template -->
+<link rel="stylesheet" type="text/css" href="{% static 'emotions/style.css' %}" />
+
+</head>
+
+<body>
+	<nav class="navbar navbar-fixed-top navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+
+				<span class="navbar-brand "><img width="30" height="30"  src="{% static "emotions/images/Positive.png" %}"></span>
+				<span class="navbar-brand">Emotions </span>
+
+			</div>
+			<div id="navbar" class="collapse navbar-collapse">
+<!-- 				<ul class="nav navbar-nav"> -->
+<!-- 					<li class="active"><a href="#">Home</a></li> -->
+<!-- 					<li><a href="#about">About</a></li> -->
+<!-- 					<li><a href="#contact">Contact</a></li> -->
+<!-- 				</ul> -->
+
+				<ul class="nav navbar-nav navbar-right">
+					<li><a><span data-toggle="modal" data-target="#aboutUsModal" class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+					<li><a href="javascript:window.open('https://www.facebook.com/jagsbabu');"><img  src="{% static "emotions/images/icn_fb.png" %}"></a></li>
+					<li><a href="javascript:window.open('https://twitter.com/jagsbabu');"><img  src="{% static "emotions/images/icn_tw.png" %}"></a></li>
+					<li><a href="javascript:window.open('https://plus.google.com/108350704491803812576');"><img  src="{% static "emotions/images/icn_g.png" %}"></a></li>
+					<li><a href="javascript:window.open('https://sg.linkedin.com/in/jagadeeshpotturi');"><img  src="{% static "emotions/images/icn_in.png" %}"></a></li>
+				</ul>
+			</div>
+
+			<!-- /.nav-collapse -->
+		</div>
+		<!-- /.container -->
+	</nav>
+	<!-- /.navbar -->
+	
+	<div class="container">
+	
+	{% if error_message %} 
+	
+	<div class="alert alert-danger alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <strong>Alert!</strong> {{error_message}}
+	</div>
+	{% endif %}
+	
+<form action="{% url 'emotions:index' %}" role="form" method="post" class="fsimple_form form-inline">
+
+{% csrf_token %}
+<div class="row row-offcanvas" >
+	
+		<div class="col-md-6">
+		
+		<p class="pull-right visible-xs">
+					<button type="button" class="btn btn-primary btn-xs"
+						data-toggle="offcanvas">Toggle</button>
+		</p>
+	        
+	        	<label for="product1" class="control-label margin-left-20">Product 1:</label>
+	        	<select class="form-control" name="product1" id="product1">
+	        		<option value="empty.json">Select Product</option>
+	        		{% if feedFiles %} 
+				        {% for value in feedFiles %}
+				        		<option value="{{value.0}}">{{value.1}}</option>
+				    	{% endfor %}
+					{% endif %}
+	        	</select>
+		</div>
+	
+		<div class="col-md-6">
+			<label for="product2" class="control-label margin-left-20">Product 2:</label>
+        	<select class="form-control" name="product2" id="product2">
+        			<option value="empty.json">Select Product</option>
+	        		{% if feedFiles %} 
+				        {% for value in feedFiles %}
+				        		<option value="{{value.0}}">{{value.1}}</option>
+				    	{% endfor %}
+					{% endif %}
+	        	</select>
+        	<button type="submit" class="btn  btn-primary btn-sm margin-left-20">
+	            	<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>Go</button>
+		</div>
+		
+	</div>
+</form>	
+	
+	<div class="row row-offcanvas margin-top-10">
+
+			<div class="col-md-6">
+				<div class="panel panel-primary" style="height: 400px;">
+					<div class="panel-heading">
+						<a class="panel-title" href="javascript:window.open('https://twitter.com/hashtag/{{product1Name}}');">
+						<img width="30" height="30"  src="{% static "emotions/images/twitter.png" %}">
+						#{{product1Name}}
+						</a>						
+					</div>
+					  <div class="panel-body">
+					  		
+					   		<div id="chart1"> </div>
+					  </div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="panel panel-primary" style="height: 400px;">
+					<div class="panel-heading">
+					
+					<a class="panel-title" href="javascript:window.open('https://twitter.com/hashtag/{{product2Name}}');">
+						
+						<img width="30" height="30"  src="{% static "emotions/images/twitter.png" %}">
+						#{{product2Name}}
+						</a>
+					
+					</div>
+					  <div class="panel-body">
+					   		<div id="chart2"> </div>
+					  </div>
+				</div>
+			</div>
+		
+	</div>
+	
+	
+	<div class="row row-offcanvas margin-top-10">
+
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">Top Tweets on {{product1Name}}</div>
+					<div class="panel-body">
+					{% if product1HappyIndexList %} 
+						  
+						        {% for value in product1HappyIndexList %}
+						        <ul class="list-group">
+						        		<h5 class="list-group-item-heading">
+											{{ value.indextype }}
+										</h5>
+										{% if value.tweets %} 
+								        		{% for tweet in value.tweets %}
+														<li class="list-group-item">{{ tweet }} </li>
+								        		{% endfor %}
+									     {% else %}
+									     	<li class="list-group-item">
+												No Tweets
+											</li>
+									     {% endif %}
+						        </ul>
+						    	{% endfor %}
+					 {% else %} 
+					 	
+					 	<h5 class="list-group-item-heading">
+											No Tweets
+						</h5>
+						  
+					  {% endif %}
+					  </div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">Top Tweets on {{product2Name}}</div>
+					<div class="panel-body">
+					{% if product2HappyIndexList %} 
+						  
+						        {% for value in product2HappyIndexList %}
+						        <ul class="list-group">
+						        		<h5 class="list-group-item-heading">
+											{{ value.indextype }}
+										</h5>
+										{% if value.tweets %} 
+								        		{% for tweet in value.tweets %}
+														<li class="list-group-item">{{ tweet }} </li>
+								        		{% endfor %}
+									     {% else %}
+									     	<li class="list-group-item">
+												No Tweets
+											</li>
+									     {% endif %}
+						        </ul>
+						    	{% endfor %}
+					 {% else %} 
+					 	
+					 	<h5 class="list-group-item-heading">
+											No Tweets
+						</h5>
+						  
+					  {% endif %}
+					  </div>
+				</div>
+			</div>
+		
+	</div>
+	
+
+	<div id="aboutUsModal" class="modal fade" role="dialog">
+	  	<div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">About Emotions <span class="glyphicon glyphicon-education" aria-hidden="true"/></h4>
+	      </div>
+	      <div class="modal-body">
+	        <p>We are in an innovation overhaul and data explosion era. Amount of data shared over the internet in the recent couple of years is 90 folds more than what happened in the past.
+	 		<br>Idea of the this project is to use Hadoop MapReduce programming model to digest the twitter data(based on a product/software/hardware etc.) and categorize the tweets based on the emotional value of the tweet. Tweet data is made to go through MapReduce program to categorize based on the 'search' and then all of the data is made to pass through the machine learning API to derive the emotional value of the tweet and then categorize accordingly. This will help to judge the 'Market Emotion' of a product and can systematically categorize how the tweeps are feeling about the product, whether they are very happy/happy/not so happy/sad.
+	 		<hr>
+	 		<h5 class="modal-title">Contact Us</h5>
+	      	<ul>
+	      		<li><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> CupofBytes@gmail.com</li>
+	      		<li><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> +65 93208040</li>
+	      	</ul>
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	</div>
+	
+	<footer>
+		<div class="panel panel-default">
+		  	<div class="panel-body">
+		        <p class="text-muted" style="text-align: center;">
+		        <a style="cursor: pointer;"><span data-toggle="modal" data-target="#aboutUsModal" class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
+		        Emotions :: Hapy &copy; NUS ISS 2015</p> 
+		     </div>
+		</div> 
+	</footer>
+	
+	<!--/.container-->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script
+		src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		
+ 	
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+
+	<script type="text/javascript">
+       $(document).ready(function () {
+    	 
+    	 $('[name=product1]').val('{{product1}}');
+    	 $('[name=product2]').val('{{product2}}');
+    	   
+         $('[data-toggle="offcanvas"]').click(function () {
+           $('.row-offcanvas').toggleClass('active')
+         });
+         
+       });
+    </script>
+
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+ 
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+ 
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart);
+ 
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+
+		{% if product1HappyIndexList %} 
+		
+	        var magRangedata = new google.visualization.DataTable();
+	        magRangedata.addColumn('string', 'Happy Index');
+	        magRangedata.addColumn('number', 'Count');
+	        magRangedata.addRows([
+		        {% for value in product1HappyIndexList %}
+		        		['{{ value.indextype }}', {{ value.indexvalue }}],
+		    	{% endfor %}
+	        ]);
+	        
+	        var options = {'title':'Happy Index Trend',
+	                'width':350,
+	                'height':300};
+	
+		     // Instantiate and draw our chart, passing in some options.
+		     var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+		     chart.draw(magRangedata, options);
+		{% else %}   
+		
+			$('#chart1').html('<div style="text-align: center; vertical-align: middle;"><br>No Product Selected' +
+					'<br><BR><img width="120" height="120"  src="{% static "emotions/images/pie_chart.png" %}">' +
+			'</div>');
+		
+		{% endif %}
+		
+		{% if product2HappyIndexList %} 
+		
+        var magRangedata = new google.visualization.DataTable();
+        magRangedata.addColumn('string', 'Happy Index');
+        magRangedata.addColumn('number', 'Count');
+        magRangedata.addRows([
+	        {% for value in product2HappyIndexList %}
+	        		['{{ value.indextype }}', {{ value.indexvalue }}],
+	    	{% endfor %}
+        ]);
+        
+        var options = {'title':'Happy Index Trend',
+                'width':350,
+                'height':300};
+
+	     // Instantiate and draw our chart, passing in some options.
+	     var chart = new google.visualization.PieChart(document.getElementById('chart2'));
+	     chart.draw(magRangedata, options);
+	
+	     {% else %}   
+			
+	     $('#chart2').html('<div style="text-align: center; vertical-align: middle;"><br>No Product Selected' +
+					'<br><BR><img width="120" height="120"  src="{% static "emotions/images/pie_chart.png" %}">' +
+			'</div>');
+	     
+		{% endif %}
+		
+		
+
+      }
+    </script>
+
+</body>
+</html>
