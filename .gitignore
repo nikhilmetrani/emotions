@@ -1,8 +1,6 @@
-.classpath
-.project
 .settings/
 target/
 /.DS_Store
 /.gitignore
-/oldclasspath
-/oldproject
+/bin
+/bin

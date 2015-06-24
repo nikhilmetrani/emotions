@@ -4,7 +4,7 @@
 	<groupId>Emotions</groupId>
 	<artifactId>EMOTIONS</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-<!--	<packaging>war</packaging> -->
+	<!-- <packaging>war</packaging> -->
 	<name>Emotions</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -14,6 +14,12 @@
 		<indico.version>2.0.0</indico.version>
 	</properties>
 	<dependencies>
+
+		<dependency>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j-core</artifactId>
+			<version>4.0.4</version>
+		</dependency>
 		<!-- Log4j - Logging -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -28,45 +34,45 @@
 		</dependency>
 		<!-- Indico.io Dependencies -->
 		<dependency>
-    			<groupId>io.indico</groupId>
-    			<artifactId>indico</artifactId>
-    			<version>${indico.version}</version>
+			<groupId>io.indico</groupId>
+			<artifactId>indico</artifactId>
+			<version>${indico.version}</version>
 		</dependency>
 		<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.5</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5</version>
 		</dependency>
 		<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpcore</artifactId>
-				<version>4.4</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4</version>
 		</dependency>
 		<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-				<version>1.2</version>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.3.1</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 		<!-- Google json-simple Dependencies -->
 		<dependency>
-				<groupId>com.googlecode.json-simple</groupId>
-				<artifactId>json-simple</artifactId>
-				<version>1.1</version>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>3.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -86,6 +92,21 @@
 					<target />
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+	  				<archive>
+	    				<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>edu.sg.nus.iss.cloudca.emotions.main.EmotionsAggregatorMain</mainClass>
+							<classpathPrefix>dependency-jars/</classpathPrefix>
+	    				</manifest>
+	  				</archive>
+				</configuration>
+  			</plugin>
 		</plugins>
 	</build>
 	<repositories>
@@ -94,5 +115,5 @@
 			<url>http://repository.cloudera.com/artifactory/cloudera-repos/</url>
 		</repository>
 	</repositories>
-	
+
 </project>

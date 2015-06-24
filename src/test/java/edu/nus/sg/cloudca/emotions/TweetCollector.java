@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sg.nus.edu.cloudca.emotions;
+package edu.nus.sg.cloudca.emotions;
 import twitter4j.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class TweetCollector {
           .setOAuthAccessTokenSecret("ddh34B4rj2Yiq53aQ15W3ksOzC1NKBdD5lwfCoGaZ3MgK");
         Twitter twitter = new TwitterFactory(cb.build()).getInstance();
         
-        String[] hashtags = {"iphone6", "galaxys6", "xbone", "ps4", "android", "ios", "windows8", "ubuntu", "osx"};;
+        String[] hashtags = {"iphone6"};//, "galaxys6", "xbone", "ps4", "android", "ios", "windows8", "ubuntu", "osx"};;
         if (args.length >= 1) {
             hashtags = args;
         }
@@ -67,7 +67,7 @@ public class TweetCollector {
           query.setMaxId(lastID-1);
         }
 
-        writeTweetsToFile(tweets, (hashtag + ".txt"));
+        writeTweetsToFile(tweets, ("data/input/"+hashtag + ".txt"));
     }
     
     private static void writeTweetsToFile(ArrayList<Status> tweets, String file) throws IOException {
