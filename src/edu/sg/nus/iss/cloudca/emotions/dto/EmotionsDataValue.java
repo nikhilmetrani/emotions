@@ -26,21 +26,22 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 	private IntWritable likeCount = new IntWritable();
 	private Text geoLocation = new Text();
 	private Text celebrity = new Text();
+	private Text date = new Text();
 	private ArrayWritable hashTag = new ArrayWritable(Text.class);
-
 	private DoubleWritable indicoValue = new DoubleWritable(0d);
 	private Text happinessIndexText = new Text();
 
 	public EmotionsDataValue() {
-		this("","",0,"","",new String[]{});
+		this("","",0,"","",new String[]{},"");
 	}
 
-	public EmotionsDataValue(String feed, String userName, int likeCount, String location, String celebrity, String[] hashTag) {
+	public EmotionsDataValue(String feed, String userName, int likeCount, String location, String celebrity, String[] hashTag, String tweetDate) {
 		this.feedData = new Text(feed);
 		this.userName = new Text(userName);
 		this.likeCount = new IntWritable(likeCount);
 		this.geoLocation = new Text(location);
 		this.celebrity = new Text(celebrity);
+		this.date = new Text(tweetDate);
 		if(hashTag != null){
 			Text[] arr = new Text[hashTag.length];
 			for(int i = 0; i < hashTag.length; i++){
@@ -57,6 +58,7 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 		geoLocation.write(out);
 		celebrity.write(out);
 		indicoValue.write(out);
+		date.write(out);
 		happinessIndexText.write(out);
 	}
 
@@ -67,6 +69,7 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 		geoLocation.readFields(in);
 		celebrity.readFields(in);
 		indicoValue.readFields(in);
+		date.readFields(in);
 		happinessIndexText.readFields(in);
 	}
 
@@ -137,7 +140,15 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 	public void setHashTag(ArrayWritable hashTag) {
 		this.hashTag = hashTag;
 	}
+	
+	public Text getDate() {
+		return date;
+	}
 
+	public void setDate(Text date) {
+		this.date = date;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -169,7 +180,7 @@ public class EmotionsDataValue implements WritableComparable<EmotionsDataValue> 
 		return "EmotionsDataValue [feedData=" + feedData + ", userName="
 				+ userName + ", likeCount=" + likeCount + ", geoLocation="
 				+ geoLocation + ", celebrity=" + celebrity + ", hashTag="
-				+ hashTag + ", indicoValue=" + indicoValue
+				+ hashTag + ", indicoValue=" + indicoValue + ", date=" + date 
 				+ ", happinessIndexText=" + happinessIndexText + "]";
 	}
 

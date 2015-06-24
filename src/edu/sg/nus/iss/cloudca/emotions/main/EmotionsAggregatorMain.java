@@ -25,6 +25,11 @@ public class EmotionsAggregatorMain extends Configured implements Tool{
 	public static void main(String[] args) throws Exception {
 		File output = new File(args[1]);
 		if(output.exists()) {
+			String[] entries = output.list();
+			for(String fileName: entries){
+			    File currentFile = new File(output.getPath(),fileName);
+			    currentFile.delete();
+			}
 			output.delete();
 		}
 		int res = ToolRunner.run(new EmotionsAggregatorMain(), args);

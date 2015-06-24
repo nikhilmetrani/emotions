@@ -17,6 +17,7 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,6 +41,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	private static final io.indico.indico indico;
 	private static final File indicoRangeFile;
 	private static Map<Range, String> indicoRangeText = new HashMap<Range, String>();
+	private static String mapperFileName;
 	
 	//TODO: To move indico api key to a config file or home as mentioned in indico site.
 	static {
@@ -52,9 +54,18 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	private EmotionsDataValue dataValue = new EmotionsDataValue();
 	
 	@Override
+	protected void setup(Context context) throws IOException, InterruptedException {
+		String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
+	    log.info("File name :" + fileName);
+	    StringTokenizer token = new StringTokenizer(fileName,".");
+	    mapperFileName = token.nextToken();
+	}
+	
+	@Override
 	protected void map(LongWritable key, Text value, Context context)
 			throws IOException, InterruptedException {
-		log.info("In Map :: Line String :" + value.toString());
+		log.info("In Map :: Line String :" + value.toString() +" Key name: "+ mapperFileName);
+		this.dataKey.setName(new Text(mapperFileName));
 		getDataFromJson(value.toString());
 		Double sentimentVal = getIndicoValue(this.dataValue.getFeedData().toString());
 		this.dataValue.setIndicoValue(new DoubleWritable(sentimentVal));
@@ -70,6 +81,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			Integer likecount=Integer.parseInt((String)json.get("likesCount"));
 			String geolocation=(String)json.get("geolocation");
 			String celebrity=(String)json.get("celebrity");
+			String date=(String)json.get("date");
 			JSONArray jsonArr=(JSONArray)json.get("hashtags");
 			Iterator<String> itr = jsonArr.iterator();
 			List<String> hashTagList = new ArrayList<String>();
@@ -77,14 +89,15 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 				hashTagList.add((String)itr.next());
 			}
 			String[] arr = new String[hashTagList.size()];
-			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr));
+			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr), date);
+			log.info("getDataFromJson :: EmotionsDataKey :" + this.dataKey);
 			log.info("getDataFromJson :: EmotionsDataValue :" + this.dataValue);
 		}catch(Exception e){
 			System.out.println("Exception : " + e.getLocalizedMessage());
 		}
 	}
 	
-	static double getIndicoValue(String statement)  {  
+	static double getIndicoValue(String statement)  { 
 		Double val = new Double(0d);
         try {
         	val =  indico.sentiment(statement);
@@ -94,6 +107,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		} catch (IOException e) {
 			log.error("IOException: " + e.getLocalizedMessage());
 		} 
+        log.info("getIndicoValue - Statement :" + statement +" -------------------  Value: "+ val);
         return val;
     }
 	

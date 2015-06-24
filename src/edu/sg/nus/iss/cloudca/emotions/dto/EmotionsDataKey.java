@@ -71,4 +71,9 @@ public class EmotionsDataKey implements WritableComparable<EmotionsDataKey> {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "EmotionsDataKey [name=" + name + "]";
+	}
 }
