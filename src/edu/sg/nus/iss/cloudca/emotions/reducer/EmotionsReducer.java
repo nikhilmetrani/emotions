@@ -2,14 +2,11 @@ package edu.sg.nus.iss.cloudca.emotions.reducer;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.json.simple.JSONObject;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -94,9 +91,6 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 		public TweetContent read(JsonReader in) throws IOException {
 			return null;
 		}
-
-		
-		
 	}
 
 }
