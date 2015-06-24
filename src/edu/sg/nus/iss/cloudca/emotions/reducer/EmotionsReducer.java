@@ -1,12 +1,14 @@
 package edu.sg.nus.iss.cloudca.emotions.reducer;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -25,10 +27,9 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
 public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue, EmotionsDataKey, Text> {
 
 	@Override
-	protected void reduce(EmotionsDataKey key, Iterable<EmotionsDataValue> values, Context context)
-					throws IOException, InterruptedException {
-		System.out.println("Reducer operation started");
+	protected void reduce(EmotionsDataKey key, Iterable<EmotionsDataValue> values, Context context) throws IOException, InterruptedException {
 
+		System.out.println("Reducer operation started");
 		Map<String,TweetContent> map = new HashMap<String,TweetContent> ();
 		for(EmotionsDataValue value : values) {
 			String keyString = value.getHappinessIndexText().toString();
@@ -37,39 +38,59 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 				content = new TweetContent(keyString);
 				map.put(keyString, content);
 			}
-			if(content.tweets.isEmpty() || content.tweets.peek().getIndicoValue().get()<value.getIndicoValue().get()) {
-				content.tweets.add(value);
+			content.tweets.add(value);
+			if(content.tweets.size() == 10) {
+				content.tweets.poll();
 			}
 			content.indexvalue++;
 		}
-		String json = null;
 		try {
 			Map<String,Object> outputMap = new HashMap<String,Object>();
 			outputMap.put("product", key.getName().toString());
 			outputMap.put("happyindex", map.values());
 			Gson gson = new GsonBuilder().registerTypeAdapter(TweetContent.class, new OutputTypeAdapter()).create();
-			json = gson.toJson(outputMap);
+			String json = gson.toJson(outputMap);
 			context.write(key, new Text(json));
+			System.out.println("Reducer operation completed. Output: " + json);
 		}
 		catch(Exception ex) {
 			System.err.println(ex.getMessage());
 		}
-		
-		System.out.println("Reducer operation completed. Output: " + json);
+
 	}
-	
+	/**
+	 * Holds value for Output JSON
+	 * @author Sugesh
+	 *
+	 */
 	public static class TweetContent  {
-		
+
 		public final String indextype;
-		public final CircularFifoQueue<EmotionsDataValue> tweets;
+		public final PriorityQueue<EmotionsDataValue> tweets;
 		public long indexvalue = 0;
-		
+
 		TweetContent(String happinessIndexString) {
 			this.indextype = happinessIndexString;
-			this.tweets = new CircularFifoQueue<EmotionsDataValue>(10);
+			this.tweets = new PriorityQueue<EmotionsDataValue>(10,new Comparator<EmotionsDataValue>() {
+				public int compare(EmotionsDataValue val1, EmotionsDataValue val2) {
+					double difference = val1.getIndicoValue().get()-val2.getIndicoValue().get();
+					if(difference>0) {
+						return 1;
+					}
+					else if(difference<0) {
+						return -1;
+					}
+					return 0;
+				}
+			});
 		}
 	}
-	
+
+	/**
+	 * Convert TweetContent to custom JSON Format.
+	 * @author Sugesh
+	 *
+	 */
 	static class OutputTypeAdapter extends TypeAdapter<TweetContent> {
 
 		@Override
@@ -87,6 +108,7 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 			out.endObject();
 		}
 
+		//Not overloaded as TweetContent is not read from JSON anywhere as of now
 		@Override
 		public TweetContent read(JsonReader in) throws IOException {
 			return null;
