@@ -1,1 +1,0 @@
-# NDESYS : Natural Disaster Events System
