@@ -44,6 +44,7 @@ public class EmotionsAggregatorMain extends Configured implements Tool{
 		job.setJarByClass(this.getClass());
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		job.getConfiguration().set("indico_range", args[2]);
 		//job.setJarByClass(EmotionsAggregatorMain.class);
 		//job.setCombinerClass(EmotionsReducer.class);
 		job.setMapperClass(EmotionsMapper.class);

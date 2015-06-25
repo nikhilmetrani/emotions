@@ -39,15 +39,14 @@ import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
 public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, EmotionsDataValue>{
 	private static final Logger log = Logger.getLogger(EmotionsMapper.class);
 	private static final io.indico.indico indico;
-	private static final File indicoRangeFile;
+	private static File indicoRangeFile;
 	private static Map<Range, String> indicoRangeText = new HashMap<Range, String>();
 	private static String mapperFileName;
 	
 	//TODO: To move indico api key to a config file or home as mentioned in indico site.
 	static {
 		indico = new io.indico.indico("99446043545d74177fdd9bc90dfdd27d");		
-		indicoRangeFile = new File("data/input/indico_range_happiness_index.dat");
-		readRange();
+		
     }
 	
 	private EmotionsDataKey dataKey = new EmotionsDataKey();
@@ -59,6 +58,8 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	    log.info("File name :" + fileName);
 	    StringTokenizer token = new StringTokenizer(fileName,".");
 	    mapperFileName = token.nextToken();
+	    indicoRangeFile = new File(context.getConfiguration().get("indico_range"));
+		readRange();
 	}
 	
 	@Override
