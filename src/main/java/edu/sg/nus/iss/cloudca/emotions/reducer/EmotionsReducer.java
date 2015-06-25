@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import com.google.gson.Gson;
@@ -32,9 +33,18 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 	@Override
 	protected void reduce(EmotionsDataKey key, Iterable<EmotionsDataValue> values, Context context) throws IOException, InterruptedException {
 
+		
+		String  product = key.getName().toString();
+		Counter counter = context.getCounter(product, "Product Counter");
+		counter.increment(1);
+		
 		System.out.println("Reducer operation started");
 		Map<String,TweetContent> map = new HashMap<String,TweetContent> ();
 		for(EmotionsDataValue value : values) {
+			
+			counter = context.getCounter(product, "Tweets Counter");
+			counter.increment(1);
+			
 			String keyString = value.getHappinessIndexText().toString();
 			TweetContent content = map.get(keyString);
 			if(content == null) {
@@ -46,6 +56,7 @@ public class EmotionsReducer extends Reducer<EmotionsDataKey, EmotionsDataValue,
 				content.tweets.poll();
 			}
 			content.indexvalue++;
+			
 		}
 		try {
 			Map<String,Object> outputMap = new HashMap<String,Object>();

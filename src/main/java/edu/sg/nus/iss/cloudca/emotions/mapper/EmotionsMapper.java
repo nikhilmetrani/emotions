@@ -64,7 +64,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 	@Override
 	protected void map(LongWritable key, Text value, Context context)
 			throws IOException, InterruptedException {
-		log.info("In Map :: Line String :" + value.toString() +" Key name: "+ mapperFileName);
+		//log.info("In Map :: Line String :" + value.toString() +" Key name: "+ mapperFileName);
 		this.dataKey.setName(new Text(mapperFileName));
 		getDataFromJson(value.toString());
 		Double sentimentVal = getIndicoValue(this.dataValue.getFeedData().toString());
@@ -78,7 +78,7 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			JSONObject json = (JSONObject)new JSONParser().parse(str);
 			String tweet = (String)json.get("tweet");
 			String user= (String) json.get("user");
-			Integer likecount=Integer.parseInt((String)json.get("likesCount"));
+			Integer likecount= Integer.parseInt(json.get("likesCount").toString());
 			String geolocation=(String)json.get("geolocation");
 			String celebrity=(String)json.get("celebrity");
 			String date=(String)json.get("date");
@@ -90,9 +90,10 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 			}
 			String[] arr = new String[hashTagList.size()];
 			this.dataValue = new EmotionsDataValue(tweet,user,likecount,geolocation, celebrity,hashTagList.toArray(arr), date);
-			log.info("getDataFromJson :: EmotionsDataKey :" + this.dataKey);
-			log.info("getDataFromJson :: EmotionsDataValue :" + this.dataValue);
+			//log.info("getDataFromJson :: EmotionsDataKey :" + this.dataKey);
+			//log.info("getDataFromJson :: EmotionsDataValue :" + this.dataValue);
 		}catch(Exception e){
+			//e.printStackTrace();
 			System.out.println("Exception : " + e.getLocalizedMessage());
 		}
 	}
@@ -101,13 +102,13 @@ public class EmotionsMapper extends Mapper<LongWritable, Text, EmotionsDataKey, 
 		Double val = new Double(0d);
         try {
         	val =  indico.sentiment(statement);
-        	log.info("Indico value: " + val);
+        	//log.info("Indico value: " + val);
 		} catch (UnsupportedOperationException e) {
 			log.error("UnsupportedOperationException: " + e.getLocalizedMessage());
 		} catch (IOException e) {
 			log.error("IOException: " + e.getLocalizedMessage());
 		} 
-        log.info("getIndicoValue - Statement :" + statement +" -------------------  Value: "+ val);
+        //log.info("getIndicoValue - Statement :" + statement +" -------------------  Value: "+ val);
         return val;
     }
 	

@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 import sys, os
 
-path = '/Users/jagadeesh/Applications/Programming/workspace20150328/emotionsui/data/'
+path = '/Users/jagadeesh/git/EMOTIONS/emotionsui/data/'
 def index(request):
 
     errormessage = ''
