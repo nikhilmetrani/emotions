@@ -28,8 +28,8 @@ public class HappinessRange extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		Job job = Job.getInstance(getConf(), "HappinessRange");
 		job.setJarByClass(this.getClass());
-		FileInputFormat.addInputPath(job, new Path("data/input/range.txt"));
-		FileOutputFormat.setOutputPath(job, new Path("dat/output"));
+		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		job.setMapperClass(HappinessRangeMapper.class);
 		job.setReducerClass(HappinessRangeReducer.class);
 		job.setMapOutputKeyClass(Text.class);
