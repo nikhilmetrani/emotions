@@ -1,6 +1,10 @@
+.classpath
+.project
 .settings/
 target/
 /.DS_Store
 /.gitignore
 /bin
 /bin
+/tweetCollector/nbproject/private/
+/tweetCollector/build/
