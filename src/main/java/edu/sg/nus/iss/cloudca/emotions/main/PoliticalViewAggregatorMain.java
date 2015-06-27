@@ -12,15 +12,16 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataKey;
-import edu.sg.nus.iss.cloudca.emotions.dto.EmotionsDataValue;
-import edu.sg.nus.iss.cloudca.emotions.mapper.EmotionsMapper;
-import edu.sg.nus.iss.cloudca.emotions.reducer.EmotionsReducer;
+import edu.sg.nus.iss.cloudca.emotions.dto.PoliticalDataKey;
+import edu.sg.nus.iss.cloudca.emotions.dto.PoliticalDataValue;
+import edu.sg.nus.iss.cloudca.emotions.mapper.PoliticalSentimentMapper;
+import edu.sg.nus.iss.cloudca.emotions.reducer.PoliticalSentimentReducer;
 
 
-public class EmotionsAggregatorMain extends Configured implements Tool{
+public class PoliticalViewAggregatorMain extends Configured implements Tool{
 	
 	public static void main(String[] args) throws Exception {
+		System.out.println("Start");
 		File output = new File(args[1]);
 		if(output.exists()) {
 			String[] entries = output.list();
@@ -30,27 +31,26 @@ public class EmotionsAggregatorMain extends Configured implements Tool{
 			}
 			output.delete();
 		}
-		int res = ToolRunner.run(new EmotionsAggregatorMain(), args);
+		int res = ToolRunner.run(new PoliticalViewAggregatorMain(), args);
 		System.out.println("Done");
 		System.exit(res);
 	}
 	
 	public int run(String[] args) throws Exception {
-		Job job = Job.getInstance(getConf(), "EmotionsAggregatorMain");
+		Job job = Job.getInstance(getConf(), "PoliticalViewAggregatorMain");
 		job.setJarByClass(this.getClass());
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		job.getConfiguration().set("indico_range", args[2]);
-		job.setMapperClass(EmotionsMapper.class);
-		job.setReducerClass(EmotionsReducer.class);
+		job.setMapperClass(PoliticalSentimentMapper.class);
+		job.setReducerClass(PoliticalSentimentReducer.class);
 		
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		
-		job.setMapOutputKeyClass(EmotionsDataKey.class);
-		job.setMapOutputValueClass(EmotionsDataValue.class);
-		job.setOutputKeyClass(EmotionsDataKey.class);
-		job.setOutputValueClass(EmotionsDataValue.class);
+		job.setMapOutputKeyClass(PoliticalDataKey.class);
+		job.setMapOutputValueClass(PoliticalDataValue.class);
+		job.setOutputKeyClass(PoliticalDataKey.class);
+		job.setOutputValueClass(PoliticalDataValue.class);
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 }
