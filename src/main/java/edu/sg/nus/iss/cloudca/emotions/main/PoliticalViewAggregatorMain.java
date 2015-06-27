@@ -17,7 +17,11 @@ import edu.sg.nus.iss.cloudca.emotions.dto.PoliticalDataValue;
 import edu.sg.nus.iss.cloudca.emotions.mapper.PoliticalSentimentMapper;
 import edu.sg.nus.iss.cloudca.emotions.reducer.PoliticalSentimentReducer;
 
-
+/**
+ * 
+ * @author Ajith Kumar
+ *
+ */
 public class PoliticalViewAggregatorMain extends Configured implements Tool{
 	
 	public static void main(String[] args) throws Exception {
