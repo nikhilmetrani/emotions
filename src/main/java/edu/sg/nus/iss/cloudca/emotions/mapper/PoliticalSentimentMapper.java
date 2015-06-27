@@ -56,7 +56,7 @@ public class PoliticalSentimentMapper extends Mapper<LongWritable, Text, Politic
 			String tweet = (String)json.get("tweet");
 			String user= (String) json.get("user");
 			Integer likecount= Integer.parseInt(json.get("likesCount").toString());
-			String date=(String)json.get("date");
+			String date="";
 			this.dataValue = new PoliticalDataValue(tweet,user,likecount,date);
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
