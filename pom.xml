@@ -107,7 +107,6 @@
 	  				<archive>
 	    				<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>edu.sg.nus.iss.cloudca.emotions.main.EmotionsAggregatorMain</mainClass>
 							<classpathPrefix>dependency-jars/</classpathPrefix>
 	    				</manifest>
 	  				</archive>
