@@ -1,5 +1,7 @@
 package edu.nus.sg.cloudca.emotions;
 
+import java.util.Arrays;
+
 /**
  * 
  * @author Jagadeesh
@@ -12,7 +14,7 @@ public class EmotionTweet {
 	private String[] hashtags;
 	private String geolocation;
 	private String celebrity;
-	private String date;
+	private long date;
 	
 	public EmotionTweet() {
 		// TODO Auto-generated constructor stub
@@ -20,7 +22,7 @@ public class EmotionTweet {
 
 	public EmotionTweet(String product, String tweet, int likesCount,
 			String user, String[] hashtags, String geolocation,
-			String celebrity, String date) {
+			String celebrity, long date) {
 		this.product = product;
 		this.tweet = tweet;
 		this.likesCount = likesCount;
@@ -87,11 +89,21 @@ public class EmotionTweet {
 		this.celebrity = celebrity;
 	}
 
-	public String getDate() {
+	public long getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(long date) {
 		this.date = date;
 	}
+
+	@Override
+	public String toString() {
+		return "EmotionTweet [product=" + product + ", tweet=" + tweet
+				+ ", likesCount=" + likesCount + ", user=" + user
+				+ ", hashtags=" + Arrays.toString(hashtags) + ", geolocation="
+				+ geolocation + ", celebrity=" + celebrity + ", date=" + date
+				+ "]";
+	}
+	
 }
