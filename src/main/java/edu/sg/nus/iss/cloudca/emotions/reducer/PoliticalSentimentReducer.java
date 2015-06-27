@@ -83,6 +83,7 @@ public class PoliticalSentimentReducer extends Reducer<PoliticalDataKey, Politic
 		} else {
 			PoliticalDataValue first = topValues.first();
 			if (first.compareTo(value) < 0) {
+				topValues.pollFirst();
 				topValues.add(new PoliticalDataValue(value));
 			}
 		}
