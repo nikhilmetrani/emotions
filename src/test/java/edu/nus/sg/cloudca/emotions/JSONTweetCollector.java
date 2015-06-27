@@ -45,9 +45,9 @@ public class JSONTweetCollector {
 		
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance();
 
-		String[] hashtags = { "galaxys6"};//  , "galaxys6", "xbone", "ps4",
-											// "android", "ios", "windows8",
-											// "ubuntu", "osx"};
+		String[] hashtags = {"galaxys6", "xbone", "ps4",
+											 "android", "ios", "windows8",
+											 "ubuntu", "osx", "iwatch", "galaxygear"};
 		if (args.length >= 1) {
 			hashtags = args;
 		}
@@ -61,7 +61,7 @@ public class JSONTweetCollector {
 	private static void SaveTwitterFeedToFile(Twitter twitter, String hashtag)
 			throws IOException {
 		
-		int maxtweets = 20;
+		int maxtweets = 500;
 		
 		Query query = new Query("#" + hashtag);
 		query.setLang("en");
