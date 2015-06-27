@@ -32,7 +32,8 @@ import twitter4j.conf.ConfigurationBuilder;
 /**
  * Emotions Twitter Source
  * 
- * @author jagadeesh potturi
+ * @author Jagadeesh Potturi for Flume Source and Flume Config
+ * @author Nikhil for twitter4j Implementation
  * 
  */
 public class EmotionsTwitterSource extends AbstractSource implements

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 /**
  * 
- * @author Jagadeesh
+ * @author Jagadeesh Potturi
  */
 public class EmotionTweet {
 	private String product;
