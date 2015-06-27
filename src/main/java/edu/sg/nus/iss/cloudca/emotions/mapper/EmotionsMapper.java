@@ -90,8 +90,9 @@ public class EmotionsMapper extends
 		Integer likecount = Integer.parseInt(json.get("likesCount").toString());
 		String geolocation = (String) json.get("geolocation");
 		String celebrity = (String) json.get("celebrity");
-		String date = String.valueOf(json.get("date"));
+		//String date = String.valueOf(json.get("date"));
 		String product = (String) json.get("product");
+		String date = "";
 
 		this.dataKey.setName(new Text(product));
 
