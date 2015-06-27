@@ -28,7 +28,7 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class JSONTweetCollector {
 
-	private static final int MAX_TWEETS = 500;
+	//private static final int MAX_TWEETS = 10;
 
 	public static void main(String[] args) throws TwitterException, IOException {
 
@@ -41,11 +41,13 @@ public class JSONTweetCollector {
 						"3250813352-V6V906Mtz07dZnzfSw4id1yajcMaM6hVzUXvARw")
 				.setOAuthAccessTokenSecret(
 						"ddh34B4rj2Yiq53aQ15W3ksOzC1NKBdD5lwfCoGaZ3MgK");
+		cb.setJSONStoreEnabled(true);
+		
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance();
 
-		String[] hashtags = { "iphone6"  , "galaxys6", "xbone", "ps4",
-											 "android", "ios", "windows8",
-											 "ubuntu", "osx"};
+		String[] hashtags = { "iphone6"};//  , "galaxys6", "xbone", "ps4",
+											// "android", "ios", "windows8",
+											// "ubuntu", "osx"};
 		if (args.length >= 1) {
 			hashtags = args;
 		}
@@ -58,13 +60,20 @@ public class JSONTweetCollector {
 
 	private static void SaveTwitterFeedToFile(Twitter twitter, String hashtag)
 			throws IOException {
+		
+		int maxtweets = 10;
+		
 		Query query = new Query("#" + hashtag);
 		query.setLang("en");
-		int numberOfTweets = MAX_TWEETS;
+		//query.setSince("2015-01-01");
+		//query.setSince("2015-01-02");
+	
+		//query.set
+		int numberOfTweets = maxtweets;
 		long lastID = Long.MAX_VALUE;
 		ArrayList<Status> tweets = new ArrayList<Status>();
 		while (tweets.size() < numberOfTweets) {
-			if (numberOfTweets - tweets.size() > MAX_TWEETS)
+			if (numberOfTweets - tweets.size() > maxtweets)
 				query.setCount(200);
 			else
 				query.setCount(numberOfTweets - tweets.size());
@@ -112,7 +121,8 @@ public class JSONTweetCollector {
 		if (loc != null) {
 			geoloc = loc.toString();
 		}
-		String date = tweet.getCreatedAt().toString();
+		System.out.println(tweet.getCreatedAt().toString());
+		long date = tweet.getCreatedAt().getTime();
 		// String gender = tweet.getUser().getP
 
 		EmotionTweet entity = new EmotionTweet(product, tweet.getText(), likes,
